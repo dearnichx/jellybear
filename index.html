@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jellybearjempire Payment</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            /* พื้นหลังไล่เฉด ชมพู-เหลือง-ฟ้า นุ่มๆ แบบในรูป */
+            background: linear-gradient(135deg, #fff0f5 0%, #fffde7 50%, #e0f7fa 100%);
+            min-height: 100vh;
+        }
+        
+        /* อนิเมชั่นลอยๆ สำหรับ SVG พื้นหลัง */
+        @keyframes float-up-down {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(10deg); }
+        }
+        @keyframes float-left-right {
+            0%, 100% { transform: translateX(0px) rotate(0deg); }
+            50% { transform: translateX(15px) rotate(-10deg); }
+        }
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        @keyframes spin-slow { 100% { transform: rotate(360deg); } }
+
+        /* อนิเมชั่นกรอบเส้นประวิ่ง */
+        @keyframes dash-animation {
+            from { stroke-dashoffset: 0; }
+            to { stroke-dashoffset: -24; }
+        }
+        .animate-dash {
+            animation: dash-animation 1s linear infinite;
+        }
+
+        .anim-float-1 { animation: float-up-down 4s ease-in-out infinite; }
+        .anim-float-2 { animation: float-up-down 5s ease-in-out infinite 1.5s; }
+        .anim-float-3 { animation: float-left-right 6s ease-in-out infinite; }
+        .anim-float-4 { animation: float-left-right 4.5s ease-in-out infinite 2s; }
+        .anim-pulse { animation: pulse-soft 3s ease-in-out infinite; }
+        .anim-spin { animation: spin-slow 8s linear infinite; }
+
+        /* การ์ดสไตล์แก้วผสมผสานสีพาสเทลหวานเจี๊ยบ */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 2px solid #ffdae9;
+            box-shadow: 0 20px 50px -10px rgba(255, 182, 193, 0.3), 
+                        inset 0 2px 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .virtual-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .virtual-card:hover {
+            transform: translateY(-4px);
+        }
+        .virtual-card:active {
+            transform: translateY(2px) scale(0.98);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 0px;
+        }
+    </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        jellypink: {
+                            50: '#fff5f7',
+                            100: '#ffdae9', /* ชมพูนมหวานๆ */
+                            400: '#ff9ebb', 
+                            500: '#ff7fa5', /* ชมพูตัวหนังสือเด่น */
+                            600: '#e55b82',
+                        },
+                        jellyyellow: {
+                            50: '#fffde7',
+                            100: '#fff9a6', /* เหลืองสว่างน่ารัก */
+                            200: '#fff575',
+                        },
+                        jellysky: {
+                            50: '#e0f7fa',
+                            100: '#b2ebf2', /* ฟ้าพาสเทลสดใส */
+                            400: '#4dd0e1',
+                            500: '#00bcd4',
+                        },
+                        customtext: {
+                            deep: '#735766', /* สีน้ำตาลอมม่วงเข้มแบบในรูป (Deep Note Color) ทำให้อ่านง่ายและไม่แข็ง */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="flex flex-col items-center py-6 px-4 text-customtext-deep relative overflow-x-hidden">
+
+    <!-- Background Decorative SVGs (ดึงเฉดสีชมพู เหลือง ฟ้า จากรูปมาใช้กระจายรอบเว็บ) -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <svg class="absolute top-[5%] left-[10%] w-8 h-8 text-jellyyellow-100 anim-float-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+        <svg class="absolute top-[15%] left-[2%] w-6 h-6 text-jellysky-100 anim-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <svg class="absolute top-[8%] left-[25%] w-4 h-4 text-jellypink-100 anim-float-3" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>
+        <svg class="absolute top-[10%] right-[8%] w-10 h-10 text-jellypink-100 anim-float-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <svg class="absolute top-[2%] right-[20%] w-5 h-5 text-jellyyellow-100 anim-float-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+        <svg class="absolute top-[40%] -left-2 w-12 h-12 text-jellysky-100 anim-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <svg class="absolute top-[50%] right-[2%] w-6 h-6 text-jellyyellow-100 anim-float-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        <svg class="absolute bottom-[10%] left-[10%] w-8 h-8 text-jellypink-100 anim-float-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <svg class="absolute bottom-[5%] right-[15%] w-7 h-7 text-jellysky-100 anim-float-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+    </div>
+
+    <!-- Toast Notification (ป้ายแจ้งเตือนสีฟ้าสดใสคุมโทนรูป) -->
+    <div id="toast" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-jellysky-400/95 backdrop-blur-sm text-white px-6 py-3 rounded-full shadow-xl transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-50 flex items-center gap-2 font-medium text-sm border border-jellysky-100">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 text-white">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        คัดลอกเลขบัญชีแล้วค่า ✨
+    </div>
+
+    <!-- Container หลัก -->
+    <div class="max-w-[420px] w-full relative z-10 space-y-5 pb-10">
+        
+        <!-- Header ร้าน -->
+        <div class="text-center pt-2 pb-2 relative">
+            <h1 class="text-2xl font-bold tracking-tight text-jellypink-500 flex items-center justify-center gap-2">
+                <!-- หัวใจพาสเทลซ้าย -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-jellypink-400 anim-pulse">
+                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                </svg>
+                Jellybearjempire
+                <!-- หัวใจพาสเทลขวา -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-jellypink-400 anim-pulse transform -scale-x-100">
+                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                </svg>
+            </h1>
+            <p class="text-sm font-semibold text-jellysky-400 mt-1">Payment & Checkout</p>
+        </div>
+
+        <!-- ================= ดีไซน์การ์ดครอบหลัก (Glass & App Style) ================= -->
+        <div class="glass-card rounded-[40px] p-3 relative z-10">
+            
+            <!-- SVG ตกแต่งบนตัวการ์ดหลักตามโทนรูป 💖 -->
+            <svg class="absolute -top-4 -left-2 w-9 h-9 text-jellypink-400 anim-float-1 z-20 drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            <svg class="absolute top-[25%] -right-3 w-7 h-7 text-jellyyellow-100 anim-float-2 z-20 drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+            <svg class="absolute bottom-[40%] -left-3 w-5 h-5 text-jellysky-100 anim-spin z-20 drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+
+            <!-- รูปภาพ (คงกรอบเส้นประสีชมพูวิ่งรอบรูปภาพไว้เป๊ะๆ) -->
+            <div class="relative p-2 rounded-[36px] z-10">
+                <!-- SVG เส้นประวิ่ง สีชมพูนมสดใส -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" rx="34" fill="none" stroke="#ff7fa5" stroke-width="2.5" stroke-dasharray="12 12" stroke-linecap="round" class="animate-dash" />
+                </svg>
+                <!-- คอนเทนเนอร์รูปภาพ -->
+                <div class="rounded-[28px] overflow-hidden relative shadow-sm border-[4px] border-white">
+                    <img src="payment1.png" alt="บัญชี Jellybearjempire" class="w-full h-auto object-cover" onerror="this.src='https://placehold.co/600x600/ffdae9/ff7fa5?text=Jellybearjempire+Payment+QR'">
+                </div>
+            </div>
+
+            <!-- โซนข้อความรายละเอียดการโอนเงิน -->
+            <div class="p-4 pt-6 space-y-5">
+                
+                <!-- กล่องข้อความต้อนรับ -->
+                <div class="text-center space-y-3">
+                    <p class="text-[15px] font-semibold leading-relaxed text-customtext-deep">
+                        <span class="inline-flex items-center justify-center gap-1">
+                            เลขบัญชีตามนี้เลยค่า
+                            <svg class="w-4 h-4 text-jellypink-400 anim-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                        </span>
+                        <br>ชื่อบัญชี <span class="text-jellypink-500 font-bold bg-jellypink-50 px-2.5 py-0.5 rounded-lg border border-jellypink-100 relative inline-block">
+                            พัศณิชาภรณ์ ทองอยู่เลิศ
+                            <svg class="absolute -top-2 -right-2.5 w-4 h-4 text-jellypink-400 anim-float-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        </span> เท่านั้นน้า!!
+                    </p>
+                    
+                    <!-- คำแนะนำวิธีใช้ สีฟ้าพาสเทลแบบในรูป -->
+                    <div class="inline-flex items-center justify-center gap-1.5 text-[11px] text-jellysky-500 font-bold bg-jellysky-50 px-4 py-2.5 rounded-full border border-jellysky-100 shadow-sm whitespace-nowrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+                        </svg>
+                        เซฟรูปสแกน หรือจิ้มคัดลอกเลขบัญชีได้เลยน้า
+                    </div>
+                </div>
+
+                <!-- Divider ตัวแบ่งโซน -->
+                <div class="flex items-center gap-3 py-1">
+                    <div class="h-px bg-jellypink-100 flex-1"></div>
+                    <span class="text-[11px] font-bold text-jellypink-500 tracking-wider">เลือกช่องทางชำระเงิน</span>
+                    <div class="h-px bg-jellypink-100 flex-1"></div>
+                </div>
+
+                <!-- โซนช่องทางบัญชี (พาสเทลสดใสตามรูปภาพ) -->
+                <div class="space-y-4">
+                    
+                    <!-- บัตรกสิกรไทย (ดีไซน์ชมพู-ฟ้าพาสเทลละมุนตามรูป) -->
+                    <div class="virtual-card relative bg-gradient-to-br from-jellypink-100 via-white to-jellysky-50 rounded-[24px] p-5 shadow-md overflow-hidden cursor-pointer border-2 border-jellypink-100/60" onclick="copyText('0528473989', this, 'kbank')">
+                        <!-- ลายน้ำดาววานิลลา -->
+                        <svg class="absolute -right-6 -bottom-6 w-32 h-32 text-jellyyellow-100 opacity-40 transform -rotate-12 pointer-events-none" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                        
+                        <div class="relative z-10 flex flex-col gap-4">
+                            <div class="flex justify-between items-center">
+                                <div class="bg-jellysky-100 text-customtext-deep px-3 py-1 rounded-full border border-jellysky-400/20 shadow-sm">
+                                    <span class="font-bold text-xs tracking-wider">KBank</span>
+                                </div>
+                                <button class="kbank-btn bg-jellypink-500 text-white text-[11px] font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm pointer-events-none transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                    คัดลอก
+                                </button>
+                            </div>
+                            <div class="mt-1">
+                                <div class="text-customtext-deep/80 text-[11px] font-bold mb-0.5">กสิกรไทย (พัศณิชาภรณ์ ทองอยู่เลิศ)</div>
+                                <div class="text-customtext-deep font-bold text-[22px] tracking-widest leading-none drop-shadow-sm">052-847-3989</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- บัตร TrueMoney (ดีไซน์ชมพู-เหลืองพาสเทลคิ้วท์ๆ ตามรูป) -->
+                    <div class="virtual-card relative bg-gradient-to-br from-jellypink-50 via-white to-jellyyellow-50 rounded-[24px] p-5 shadow-md overflow-hidden cursor-pointer border-2 border-jellypink-100/60" onclick="copyText('0967842214', this, 'true')">
+                        <!-- ลายน้ำหัวใจหวานๆ -->
+                        <svg class="absolute -left-6 -top-6 w-32 h-32 text-jellypink-100 opacity-30 transform rotate-12 pointer-events-none" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+
+                        <div class="relative z-10 flex flex-col gap-4">
+                            <div class="flex justify-between items-center">
+                                <div class="bg-jellypink-100 text-customtext-deep px-3 py-1 rounded-full border border-jellypink-400/20 shadow-sm">
+                                    <span class="font-bold text-xs tracking-wider">TrueMoney Wallet</span>
+                                </div>
+                                <button class="true-btn bg-jellypink-500 text-white text-[11px] font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm pointer-events-none transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                    คัดลอก
+                                </button>
+                            </div>
+                            <div class="mt-1">
+                                <div class="text-customtext-deep/80 text-[11px] font-bold mb-0.5">ทรูมันนี่ (พัศณิชาภรณ์ ทองอยู่เลิศ)</div>
+                                <div class="text-customtext-deep font-bold text-[22px] tracking-widest leading-none drop-shadow-sm">096-784-2214</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- กล่องเตือน Wallet +5 บาท (คูปองสีเหลืองวานิลลาขอบเส้นประชมพูเข้ม เด่นและน่ารักมากๆ) -->
+                    <div class="relative bg-gradient-to-br from-jellyyellow-50 to-white rounded-[20px] p-3.5 border-2 border-dashed border-jellypink-400 shadow-sm z-10 overflow-hidden transform transition-transform hover:scale-[1.02] mt-1">
+                        <!-- ดาวตกแต่ง -->
+                        <svg class="absolute -right-3 -bottom-3 w-14 h-14 text-jellyyellow-100/70 transform -rotate-12 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+
+                        <div class="flex items-start gap-3 relative z-10">
+                            <!-- ไอคอนแจ้งเตือนเด้งดึ๋ง -->
+                            <div class="bg-jellypink-500 p-1.5 rounded-full shadow-md text-white flex-shrink-0 mt-1 animate-bounce">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3.5 h-3.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <div class="text-[11.5px] leading-relaxed text-left flex-1 text-customtext-deep font-medium">
+                                <span class="inline-block bg-jellypink-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full mb-1.5 tracking-wider shadow-sm">
+                                    สำคัญมากน้า
+                                </span><br>
+                                <span class="font-bold text-jellypink-500 text-[12.5px]">เฉพาะคนโอน Wallet</span> รบกวนบวกเพิ่ม 
+                                <span class="bg-jellypink-100 text-jellypink-500 px-1.5 py-0.5 rounded-md font-bold border border-jellypink-400/20 whitespace-nowrap shadow-sm">+5 บาท</span> นะคะ<br>
+                                <span class="text-jellypink-500/80 font-medium text-[10px] mt-1 block leading-snug">(เนื่องจากค่าธรรมเนียมแอปสูงมาก หากไม่สะดวกแนะนำโอนเข้าธนาคารได้เลยน้า)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- กล่องเตือนโอนผิด เงื่อนไขร้านค้า (คุมโทนเหลืองนุ่มนวล) -->
+                    <div class="bg-jellyyellow-50/70 border border-jellyyellow-100 rounded-2xl p-3 flex items-start gap-3 text-left shadow-sm">
+                        <div class="bg-white p-1.5 rounded-full shadow-sm text-jellypink-500 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div class="text-[13px] leading-relaxed font-bold text-customtext-deep">
+                            โอนผิด โอนใหม่ ไม่โอนคืนนะคะ!<br>
+                            <span class="text-customtext-deep/80 text-[12px] font-medium flex items-center gap-1 flex-wrap">
+                                รบกวนเช็คชื่อและเลขบัญชีให้ดีก่อนโอนน้า 
+                                <svg class="w-3.5 h-3.5 text-jellypink-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            </span>
+                            <span class="text-xs text-customtext-deep/70 font-medium block mt-1">สามารถทบยอดเงินไว้หักในการสั่งซื้อครั้งถัดไปได้</span>
+                            <span class="text-xs text-jellypink-500 font-bold block mt-0.5">** ยกเลิกไม่คืนเงินทุกกรณีนะคะ **</span>
+                        </div>
+                    </div>
+
+                    <!-- กล่องเตือนแปะสลิป (คุมโทนชมพูนมพาสเทล) -->
+                    <div class="bg-jellypink-50 border border-jellypink-100 rounded-2xl p-3 flex items-start gap-3 text-left shadow-sm">
+                        <div class="bg-white p-1.5 rounded-full shadow-sm text-jellypink-500 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                            </svg>
+                        </div>
+                        <div class="text-[13px] leading-relaxed font-bold text-customtext-deep">
+                            โอนแล้วรบกวน <span class="text-jellypink-500 font-black">แปะสลิปทุกครั้ง</span> ด้วยน้า<br>
+                            <span class="text-customtext-deep/80 text-[12px] font-medium flex items-center gap-1 flex-wrap">
+                                เค้าจะได้รีบเช็คยอดให้ไวๆ เลยค่า 
+                                <svg class="w-3.5 h-3.5 text-jellypink-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer / ปุ่มติดต่อไลน์ (สีฟ้าพาสเทลน่ารักๆ) -->
+        <div class="text-center flex flex-col items-center justify-center gap-1.5 text-[11px] text-customtext-deep/70 pt-1 relative z-10">
+            <a href="https://lin.ee/6x5srKT" target="_blank" class="inline-flex items-center gap-1.5 font-bold text-jellysky-500 bg-white hover:bg-jellysky-50 px-4 py-2 rounded-full border-2 border-jellysky-100 transition-all shadow-sm mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.923-1.785c-.154-.601.154-1.194.586-1.641A8.25 8.25 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+                </svg>
+                📱 ติดต่อเราทาง Line คลิกที่นี่เลยค่า
+            </a>
+            <div class="flex items-center gap-1 font-bold text-customtext-deep">
+                ปกติเค้าจะตอบกลับไม่เกิน 5 นาทีค่า
+            </div>
+            (หากไม่ติดงานประจำน้า)
+        </div>
+
+    </div>
+
+    <!-- สคริปต์สำหรับการก๊อปปี้ -->
+    <script>
+        function copyText(text, containerElement, type) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+                
+                showToast();
+
+                const buttonElement = containerElement.querySelector(type === 'kbank' ? '.kbank-btn' : '.true-btn');
+                const originalHtml = buttonElement.innerHTML;
+                
+                buttonElement.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                    สำเร็จ
+                `;
+                buttonElement.classList.replace('bg-jellypink-500', 'bg-jellysky-400');
+                
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalHtml;
+                    buttonElement.classList.replace('bg-jellysky-400', 'bg-jellypink-500');
+                }, 2000);
+
+            } catch (err) {
+                console.error('ไม่สามารถคัดลอกได้:', err);
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('opacity-0', 'translate-y-4');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-4');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
